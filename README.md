@@ -26,9 +26,9 @@ The script will download, compile, configure and run the following pieces of sof
 - Flume 1.8.0
 - Sqoop 1.4.7
 - Hue 4.4.0
+- Tez 0.8.4
 
 ## Layout
 
 - /opt will contain installed software (each project goes into its own directory)
 - /data will contain Hadoop's data
-- User's home dir will contain ant and maven directories and all downloaded sources. All its contents can be safely removed after the installation is finished.
