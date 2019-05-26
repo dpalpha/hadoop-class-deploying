@@ -17,17 +17,20 @@ HADOOOP 2W TEZ
 =====================================================
 EOF
 
+
+# preparing user hadoop groups
+
 sudo userdel -r hduser
 sudo groupdel hadoop
 
 sudo groupadd hadoop
 sudo useradd -g hadoop hduser
+
 su - hduser
 
 ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
 cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 ssh-keygen -t rsa
-
 
 
 sudo chown -R hduser:hadoop /opt/hadoop
@@ -310,6 +313,11 @@ hadoop jar /opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.1.ja
 yarn jar /opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.1.jar pi 3 100000
 
 
+hdfs dfs -mkdir input
+hdfs dfs -put /opt/hadoop/LICENSE.txt input
+
+hadoop jar /opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.1.jar grep input output 'dfs[a-z.]+'^C
+
 
 hdfs dfs -mkdir -p /hduser
 hdfs dfs -chown hduser:hduser /hduser
@@ -530,7 +538,7 @@ export ZOOCFGDIR=/opt/zookeeper/conf
 EOF
 
 
-# H
+# HUE 4.4.0
 cat << "EOF"
 --------------------------------------------
 preparation sqoop src env
@@ -587,3 +595,54 @@ EOF
 
 INSTALL_DIR=/opt/hue make install
 nohup /opt/hue/build/env/bin/supervisor 1>/dev/null 2>/dev/null &
+
+
+# TEZ-0.8.4
+cat << "EOF"
+--------------------------------------------
+preparation tez src env
+--------------------------------------------
+EOF
+
+# INSTALL AND CONF TEZ
+cd /home
+wget http://ftp.man.poznan.pl/apache/tez/0.8.4/apache-tez-0.8.4-bin.tar.gz
+tar xvzf /home/apache-tez-0.8.4-bin.tar.gz;
+mv apache-tez-0.8.4-bin /opt/tez
+
+hdfs dfs -mkdir /tez
+hdfs dfs -put /home/apache-tez-0.8.4-bin.tar.gz /tez/
+
+hdfs dfs -mkdir -p /tez/conf
+hdfs dfs -mkdir -p /tez/tez
+
+
+
+
+cat << EOF > /opt/tez/conf/tez-site.xml
+<!--<hdfs://localhost:8020 is the value as specified in the fs.default.name property in core-site.xml>-->
+<configuration>
+<property>
+    <name>tez.lib.uris</name>
+    <value>hdfs://localhost:9000/tez/apache-tez-0.8.4-bin.tar.gz</value>
+    <type>string</type>
+</property>
+</configuration>
+EOF
+
+# /opt/hadoop/etc/hadoop/mapred-site.xml << <property><name>mapred.framework.name</name><value>yarn-tez</value></property>
+
+
+echo "export TEZ_HOME=/opt/tez" >> ~/.bashrc
+echo "export PATH=/opt/tez:\$PATH" >> ~/.bashrc
+source ~/.bashrc
+
+
+hadoop jar $TEZ_HOME/tez-examples-0.8.4.jar orderedwordcount /path/to/sample/text/file /path/to/output/hdfs/directory
+
+
+# INTEGRTING WITH HIVE
+sudo cp /opt/hive/conf/hive-exec-log4j2.properties /opt/hive/conf/hive-exec-log4j2.properties
+hdfs dfs -put /usr/share/hive/conf/hive-exec-log4j2.properties /tez/
+
+hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.0.2.jar pi 16 1000
