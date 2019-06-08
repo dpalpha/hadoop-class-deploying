@@ -3,7 +3,7 @@
 
 ## Requirements
 
-- CentOS 7
+- CentOS 7, Ubuntu 18.04
 - SElinux and firewalld should be disabled.
 - The install.sh script should be run as root.
 - set default "localhost"
