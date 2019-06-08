@@ -17,6 +17,7 @@ The script will download, compile, configure and run the following pieces of sof
 - Cmake-3.6.2
 - Ant 1.10.5
 - Maven 3.6.1
+- Protobuf 2.5
 - Zookeeper 3.5.5
 - Hadoop 3.1.1
 - Spark 2.4.3
