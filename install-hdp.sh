@@ -41,10 +41,29 @@ sudo chmod -R 777 /opt/hadoop
 # provide privileges hduser as root user
 sudo echo "hduser ALL=(ALL:ALL) ALL" >> ~/visudo
 
+cat << "EOF"
+--------------------------------------------
+preparation part tools
+--------------------------------------------
+EOF
 
 yum -y install wget gcc gcc-c++ autoconf automake libtool zlib-devel cmake openssl openssl-devel snappy snappy-devel bzip2 bzip2-devel protobuf protobuf-devel
+# apt-get install libcppunit-dev
+# sudo apt install protobuf-compiler
 
-sudo yum remove cmake -y
+cd /usr/local/src/
+wget https://github.com/google/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
+tar xvf protobuf-2.5.0.tar.gz
+cd protobuf-2.5.0
+./autogen.sh
+./configure --prefix=/usr
+make
+make install
+protoc --version
+
+
+
+# sudo yum remove cmake -y
 cd /home
 wget https://cmake.org/files/v3.6/cmake-3.6.2.tar.gz
 tar -zxvf cmake-3.6.2.tar.gz
@@ -113,8 +132,10 @@ cat << "EOF"
 --------------------------------------------
 preparation zookeeper env
 --------------------------------------------
-EOF
+--------------------------------------------
 
+EOF
+sudo apt-get install build-essential libboost-all-dev cmake flex
 cd /home
 wget http://apache.rediris.es/zookeeper/zookeeper-3.5.5/apache-zookeeper-3.5.5.tar.gz
 tar -xvf apache-zookeeper-3.5.5.tar.gz
@@ -137,11 +158,12 @@ EOF
 echo "PATH=/opt/zookeeper/bin:\$PATH" >> ~/.bashrc
 source ~/.bashrc
 zkServer.sh start
-
+# ps aux|grep zookeeper
 
 cat << "EOF"
 --------------------------------------------
-preparation hadoop src env
+preparation hadoop native version env
+--------------------------------------------
 --------------------------------------------
 EOF
 
@@ -170,7 +192,7 @@ wget http://apache.rediris.es/hadoop/common/hadoop-3.1.1/hadoop-3.1.1-src.tar.gz
 tar -xvf /home/hadoop-3.1.1-src.tar.gz
 mv /home/hadoop-3.1.1-src /home/hadoop-src
 cd /home/hadoop-src
-mvn package -Pdist,native -DskipTests -Dtar -Dzookeeper
+mvn package -Pdist,native -DskipTests -Dtar -Dzookeeper.version=3.5.5
 tar -C/opt -xvf /home/hadoop-src/hadoop-dist/target/hadoop-3.1.1.tar.gz
 mv /opt/hadoop-* /opt/hadoop
 mv /opt/hadoop /opt/hadoop_native
@@ -186,7 +208,6 @@ sudo chmod -R 777 /opt/hadoop
 
 sudo chgrp -R hadoop /opt/hadoop
 sudo chmod -R 777 /opt/hadoop
-
 
 
 echo "#set hadooop path env" >> ~/.bashrc
@@ -212,14 +233,12 @@ echo "export HADOOP_OPTS='-Djava.library.path=\$HADOOP_HOME/lib'" >> ~/.bashrc
 source ~/.bashrc
 
 
-
 echo "export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true" >> /opt/hadoop/etc/hadoop/hadoop-env.sh
 echo "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk" >> /opt/hadoop/etc/hadoop/hadoop-env.sh
 echo "export HADOOP_HOME_WARN_SUPPRESS='TRUE'" >> /opt/hadoop/etc/hadoop/hadoop-env.sh
 echo "export HADOOP_ROOT_LOGGER='WARN,DRFA'" >> /opt/hadoop/etc/hadoop/hadoop-env.sh
 
 source /opt/hadoop/etc/hadoop/hadoop-env.sh
-
 
 
 cat << EOF > /opt/hadoop/etc/hadoop/yarn-site.xml
@@ -265,7 +284,6 @@ cat << EOF > /opt/hadoop/etc/hadoop/core-site.xml
 EOF
 
 
-
 cat << EOF > /opt/hadoop/etc/hadoop/mapred-site.xml
 <configuration>
   <property><name>mapred.framework.name</name><value>yarn</value></property>
@@ -280,8 +298,7 @@ cat << EOF > /opt/hadoop/etc/hadoop/mapred-site.xml
   <property><name>mapreduce.reduce.cpu.vcores</name><value>1</value></property>
   <property><name>mapreduce.reduce.memory.mb</name><value>1024</value></property>
   <property><name>mapreduce.reduce.java.opts</name><value>-Djava.net.preferIPv4Stack=true -Xmx768m</value></property>
-
-
+  
   <property><name>mapreduce.jobhistory.address</name><value>localhost:10020</value></property>
   <property><name>mapreduce.jobhistory.webapp.address</name><value>localhost:19888</value></property>
 
