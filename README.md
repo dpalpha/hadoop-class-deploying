@@ -34,7 +34,7 @@ The script will download, compile, configure and run the following pieces of sof
 - /opt will contain installed software (each project goes into its own directory)
 - /data will contain Hadoop's data
 
-### run hdp cluster
+### First run cluster
 
 ```sh
 su hduser
