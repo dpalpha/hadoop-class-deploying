@@ -36,7 +36,7 @@ The script will download, compile, configure and run the following pieces of sof
 
 ### First run cluster
 
-```sh
+```bash
 su hduser
 stop-all.sh
 hdfs namenode -format
