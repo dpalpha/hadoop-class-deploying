@@ -33,3 +33,14 @@ The script will download, compile, configure and run the following pieces of sof
 
 - /opt will contain installed software (each project goes into its own directory)
 - /data will contain Hadoop's data
+
+### Example
+
+```sh
+stop-all.sh
+hdfs namenode -format
+start-dfs.sh
+start-yarn.sh 
+jps
+
+```
