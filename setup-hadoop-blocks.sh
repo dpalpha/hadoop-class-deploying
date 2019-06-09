@@ -324,6 +324,11 @@ sudo chown -R hduser:hadoop /opt/hadoop/yarn_data/hdfs/namenode
 sudo chown -R hduser:hadoop /opt/hadoop/yarn_data/hdfs/datanode
 sudo chown -R hduser:hadoop /opt/hadoop/yarn_data/hdfs/namenode_second
 
+chmod u+rwx,g-rwx,o+rx-w /opt/hadoop/yarn_data/hdfs/namenode
+chmod u+rwx,g-rwx,o+rx-w /opt/hadoop/yarn_data/hdfs/namenode_second
+
+hadoop namenode -format
+
 start-dfs.sh
 start-yarn.sh
 
@@ -344,7 +349,7 @@ hdfs dfs -mkdir /tmp
 hdfs dfs -chmod 1777 /tmp
 
 
-hadoop namenode -format
+
 hadoop-daemon.sh start namenode
 hadoop-daemon.sh start datanode
 yarn-daemon.sh start resourcemanager
