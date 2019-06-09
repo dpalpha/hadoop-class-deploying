@@ -1,4 +1,4 @@
-# Apache Hadoop 3.1.1 native
+# Apache Hadoop 3.1.1
 
 
 ## Requirements
