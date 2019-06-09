@@ -31,7 +31,8 @@ su - hduser
 ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
 cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 ssh-keygen -t rsa
-
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod og-wx ~/.ssh/authorized_keys 
 
 sudo chown -R hduser:hadoop /opt/hadoop
 sudo chmod -R 777 /opt/hadoop
