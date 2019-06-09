@@ -1,7 +1,5 @@
-# Transport Security for Intermediate Data 
 
-
-# 1. 
+# 1. Transport Security for Intermediate Data 
 
 cat << EOF > /opt/hadoop/etc/hadoop/core-site.xml
 <configuration>
