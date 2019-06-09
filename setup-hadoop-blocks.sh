@@ -24,7 +24,7 @@ sudo userdel -r hduser
 sudo groupdel hadoop
 
 sudo groupadd hadoop
-sudo useradd -g hadoop hduser
+sudo useradd --ingroup hadoop hduser
 
 su - hduser
 
@@ -44,6 +44,7 @@ sudo echo "hduser ALL=(ALL:ALL) ALL" >> ~/visudo
 cat << "EOF"
 --------------------------------------------
 preparation part tools
+--------------------------------------------
 --------------------------------------------
 EOF
 
